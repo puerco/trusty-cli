@@ -6,7 +6,7 @@ import (
 
 	"github.com/bom-squad/protobom/pkg/sbom"
 	v1 "github.com/stacklok/minder/pkg/api/protobuf/go/minder/v1"
-	"github.com/stacklok/trusty-attest/internal/trusty"
+	"github.com/stacklok/trusty-attest/pkg/trusty"
 )
 
 func NewScorer() *Scorer {
