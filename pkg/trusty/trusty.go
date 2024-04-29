@@ -28,9 +28,11 @@ type PredicateOpts struct {
 func BuildPredicate(opts PredicateOpts, scores []PackageScore) (*Predicate, error) {
 	t := time.Now()
 	pred := &Predicate{
-		Date:        &t,
-		PackageInfo: opts.Package,
-		Packages:    scores,
+		Metadata: Metadata{
+			Date:        &t,
+			PackageInfo: opts.Package,
+		},
+		Packages: scores,
 	}
 
 	return pred, nil
