@@ -25,7 +25,7 @@ type PredicateOpts struct {
 	Package PackageInfo
 }
 
-func BuildPredicate(opts PredicateOpts, scores []PackageScore) *Predicate {
+func BuildPredicate(opts PredicateOpts, scores []PackageScore) (*Predicate, error) {
 	t := time.Now()
 	pred := &Predicate{
 		Date:        &t,
@@ -33,10 +33,10 @@ func BuildPredicate(opts PredicateOpts, scores []PackageScore) *Predicate {
 		Packages:    scores,
 	}
 
-	return pred
+	return pred, nil
 }
 
-func Attest(subjects []intoto.Subject, p *Predicate) intoto.Statement {
+func Attest(subjects []intoto.Subject, p *Predicate) (intoto.Statement, error) {
 	return intoto.Statement{
 		StatementHeader: intoto.StatementHeader{
 			Type:          intoto.StatementInTotoV01,
@@ -44,5 +44,5 @@ func Attest(subjects []intoto.Subject, p *Predicate) intoto.Statement {
 			Subject:       []intoto.Subject{},
 		},
 		Predicate: p,
-	}
+	}, nil
 }
