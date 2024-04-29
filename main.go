@@ -7,7 +7,7 @@ import (
 
 	"github.com/sirupsen/logrus"
 	"github.com/stacklok/trusty-attest/internal/packages"
-	"github.com/stacklok/trusty-attest/internal/trusty"
+	"github.com/stacklok/trusty-attest/pkg/sbom"
 )
 
 func main() {
@@ -22,19 +22,25 @@ func main() {
 		logrus.Fatal(err)
 	}
 
-	tclient := trusty.NewClient()
-
-	for _, n := range nodelist.Nodes {
-		if n.Id == "root" {
-			continue
-		}
-		fmt.Printf("package: %s version: %s\n", n.Name, n.Version)
-		score, err := tclient.NodeScore(n)
-		if err != nil {
-			logrus.Fatal(err)
-		}
-		fmt.Printf("+%v", score)
-		break
+	scorer := sbom.NewScorer()
+	results, err := scorer.ScoreNodeList(ctx, nodelist)
+	if err != nil {
+		logrus.Fatal(err)
 	}
 
+	fmt.Printf("%+v", results)
+	/*
+		for _, n := range nodelist.Nodes {
+			if n.Id == "root" {
+				continue
+			}
+			fmt.Printf("package: %s version: %s\n", n.Name, n.Version)
+			score, err := tclient.NodeScore(n)
+			if err != nil {
+				logrus.Fatal(err)
+			}
+			fmt.Printf("+%v", score)
+			break
+		}
+	*/
 }
