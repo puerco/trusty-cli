@@ -15,7 +15,11 @@
 // Package trusty provides an evaluator that uses the trusty API
 package trusty
 
-import "time"
+import (
+	"time"
+
+	intoto "github.com/in-toto/in-toto-golang/in_toto"
+)
 
 type PredicateOpts struct {
 	Package PackageInfo
@@ -32,4 +36,13 @@ func BuildPredicate(opts PredicateOpts, scores []PackageScore) *Predicate {
 	return pred
 }
 
-//func Attest()
+func Attest(subjects []intoto.Subject, p *Predicate) intoto.Statement {
+	return intoto.Statement{
+		StatementHeader: intoto.StatementHeader{
+			Type:          intoto.StatementInTotoV01,
+			PredicateType: "http://trustypkg.dev",
+			Subject:       []intoto.Subject{},
+		},
+		Predicate: p,
+	}
+}

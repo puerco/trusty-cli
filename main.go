@@ -29,18 +29,4 @@ func main() {
 	}
 
 	fmt.Printf("%+v", results)
-	/*
-		for _, n := range nodelist.Nodes {
-			if n.Id == "root" {
-				continue
-			}
-			fmt.Printf("package: %s version: %s\n", n.Name, n.Version)
-			score, err := tclient.NodeScore(n)
-			if err != nil {
-				logrus.Fatal(err)
-			}
-			fmt.Printf("+%v", score)
-			break
-		}
-	*/
 }
