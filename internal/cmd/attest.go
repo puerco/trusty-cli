@@ -16,11 +16,15 @@ import (
 )
 
 type attestOptions struct {
-	Bundle bool
+	Bundle        bool
+	PredicateOnly bool
 }
 
 // Validates the options in context with arguments
 func (ao *attestOptions) Validate() error {
+	if ao.Bundle && ao.PredicateOnly {
+		return fmt.Errorf("cannot define --bundle and --predicate-only at the same time")
+	}
 	return nil
 }
 
@@ -31,6 +35,14 @@ func (o *attestOptions) AddFlags(cmd *cobra.Command) {
 		"b",
 		false,
 		"create a signed sigstore bundle (runs the oauth flow)",
+	)
+
+	cmd.PersistentFlags().BoolVarP(
+		&o.PredicateOnly,
+		"predicate-only",
+		"p",
+		false,
+		"dont't output a full statement, only the predicate",
 	)
 }
 
@@ -50,6 +62,10 @@ func addAttest(parentCmd *cobra.Command) {
 				return fmt.Errorf("no directory specified")
 			}
 
+			if err := opts.Validate(); err != nil {
+				return err
+			}
+
 			nodelist, err := l.ReadPackages(ctx, args[0])
 			if err != nil {
 				return fmt.Errorf("reading packages: %w", err)
@@ -66,14 +82,24 @@ func addAttest(parentCmd *cobra.Command) {
 				return fmt.Errorf("building attestation predicate: %w", err)
 			}
 
-			// Create the attestation
-			att, err := trusty.Attest([]intoto.Subject{}, pred)
-
 			f := os.Stdout
 			b := bytes.Buffer{}
 			enc := json.NewEncoder(&b)
 			enc.SetIndent("", "  ")
 			enc.SetEscapeHTML(false)
+
+			if opts.PredicateOnly {
+				if err := enc.Encode(pred); err != nil {
+					return fmt.Errorf("encoding predicate: %w", err)
+				}
+				if _, err := b.WriteTo(f); err != nil {
+					return fmt.Errorf("writing predicate: %w", err)
+				}
+				return nil
+			}
+
+			// Create the attestation
+			att, err := trusty.Attest([]intoto.Subject{}, pred)
 
 			if err := enc.Encode(att); err != nil {
 				return fmt.Errorf("encoding attestation: %w", err)
