@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 	"os"
 
 	intoto "github.com/in-toto/in-toto-golang/in_toto"
@@ -18,6 +19,7 @@ import (
 type attestOptions struct {
 	Bundle        bool
 	PredicateOnly bool
+	File          string
 }
 
 // Validates the options in context with arguments
@@ -43,6 +45,14 @@ func (o *attestOptions) AddFlags(cmd *cobra.Command) {
 		"p",
 		false,
 		"dont't output a full statement, only the predicate",
+	)
+
+	cmd.PersistentFlags().StringVarP(
+		&o.File,
+		"file",
+		"f",
+		"",
+		"write output to file path (default STDOUT)",
 	)
 }
 
@@ -82,7 +92,17 @@ func addAttest(parentCmd *cobra.Command) {
 				return fmt.Errorf("building attestation predicate: %w", err)
 			}
 
-			f := os.Stdout
+			var f io.Writer
+			if opts.File != "" {
+				f, err = os.Create(opts.File)
+				if err != nil {
+					return fmt.Errorf("opening file: %w", err)
+				}
+				defer f.(*os.File).Close()
+			} else {
+				f = os.Stdout
+			}
+
 			b := bytes.Buffer{}
 			enc := json.NewEncoder(&b)
 			enc.SetIndent("", "  ")
