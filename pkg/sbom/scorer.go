@@ -65,7 +65,10 @@ func (s *Scorer) ScoreNodeList(ctx context.Context, nl *sbom.NodeList) ([]trusty
 		tlID[i] = struct{}{}
 	}
 	scores := []trusty.PackageScore{}
+	fmt.Printf("Scoring %d dependencies", len(nl.Nodes))
+	defer fmt.Println("")
 	for _, n := range nl.Nodes {
+		fmt.Print(".")
 		if _, ok := tlID[n.Id]; ok {
 			continue
 		}
