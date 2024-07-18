@@ -12,9 +12,9 @@ import (
 	"github.com/anchore/syft/syft/pkg/cataloger/python"
 	"github.com/anchore/syft/syft/source"
 	"github.com/anchore/syft/syft/source/directorysource"
-	"github.com/bom-squad/protobom/pkg/sbom"
 	"github.com/google/uuid"
-	v1 "github.com/stacklok/minder/pkg/api/protobuf/go/minder/v1"
+	"github.com/protobom/protobom/pkg/sbom"
+	"github.com/stacklok/trusty-sdk-go/pkg/types"
 
 	"sigs.k8s.io/release-sdk/git"
 	"sigs.k8s.io/release-utils/util"
@@ -28,14 +28,14 @@ const (
 	Npm    Ecosystem = "npm"
 )
 
-func (e Ecosystem) ToTrusty() v1.DepEcosystem {
+func (e Ecosystem) ToTrusty() types.Ecosystem {
 	switch e {
 	case Python:
-		return v1.DepEcosystem_DEP_ECOSYSTEM_PYPI
+		return types.ECOSYSTEM_PYPI
 	case Go:
-		return v1.DepEcosystem_DEP_ECOSYSTEM_GO
+		return types.ECOSYSTEM_GO
 	case Npm:
-		return v1.DepEcosystem_DEP_ECOSYSTEM_NPM
+		return types.ECOSYSTEM_NPM
 	}
 	return 0
 }

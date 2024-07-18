@@ -32,6 +32,7 @@ func init() {
 		fmt.Sprintf("the logging verbosity, either %s", log.LevelNames()),
 	)
 	addAttest(rootCmd)
+	addSBOM(rootCmd)
 	rootCmd.AddCommand(version.WithFont("doom"))
 }
 
