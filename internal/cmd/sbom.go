@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"slices"
 
 	"github.com/spf13/cobra"
 	"github.com/stacklok/trusty-attest/pkg/display"
@@ -15,10 +16,17 @@ type sbomOptions struct {
 	SbomPath   string
 	File       string
 	Transients bool
+	Format     string
 }
+
+var formats = []string{"term", "csv"}
 
 // Validate checks the options in context with arguments
 func (ao *sbomOptions) Validate() error {
+	errs := []error{}
+	if !slices.Contains(formats, ao.Format) && ao.Format != "" {
+		errs = append(errs, fmt.Errorf("invalid format, must be one of %v", formats))
+	}
 	return nil
 }
 
@@ -29,6 +37,14 @@ func (o *sbomOptions) AddFlags(cmd *cobra.Command) {
 		"t",
 		true,
 		"include transient dependencies in report",
+	)
+
+	cmd.PersistentFlags().StringVarP(
+		&o.Format,
+		"format",
+		"f",
+		"term",
+		fmt.Sprintf("Output format, one of %v", formats),
 	)
 }
 
@@ -72,7 +88,15 @@ func addSBOM(parentCmd *cobra.Command) {
 				f = os.Stdout
 			}
 
-			renderer := display.TermRenderer{}
+			// Choose the selected renderer
+			var renderer display.Renderer
+			switch opts.Format {
+			case "term":
+				renderer = &display.TermRenderer{}
+			case "csv":
+				renderer = &display.CsvRenderer{}
+			}
+
 			renderer.DisplayResultSet(f, results)
 
 			return nil
