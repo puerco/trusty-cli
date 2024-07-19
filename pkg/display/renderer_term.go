@@ -49,7 +49,7 @@ func (tr *TermRenderer) DisplayResultSet(w io.Writer, res []trusty.PackageScore)
 			if row > 0 {
 				// row -1 because the row number is off by 1 from the data
 				// because of the inserted header
-				f, err := strconv.ParseFloat(rows[row-1][1], 64)
+				f, err := strconv.ParseFloat(rows[row-1][4], 64)
 				if err == nil && f <= 5 {
 					return riskyStyle
 				}
