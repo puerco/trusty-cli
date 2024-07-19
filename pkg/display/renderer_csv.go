@@ -4,6 +4,7 @@ import (
 	"encoding/csv"
 	"fmt"
 	"io"
+	"strings"
 
 	"github.com/stacklok/trusty-attest/pkg/trusty"
 )
@@ -11,13 +12,21 @@ import (
 type CsvRenderer struct {
 }
 
+var intLabels = map[bool]string{
+	true: "1", false: "0",
+}
+
 func (cr *CsvRenderer) DisplayResultSet(w io.Writer, res []trusty.PackageScore) error {
 	records := [][]string{
-		{"purl", "name", "version", "score"},
+		{"ecosystem", "name", "version", "purl", "score", "activity", "provenance", "deprecated", "malicious"},
 	}
 	for _, r := range res {
 		records = append(records, []string{
-			r.Package, r.Version, r.Identifiers["purl"], fmt.Sprintf("%f", r.Score),
+			strings.ToLower(r.Ecosystem), r.Package, r.Version, r.Identifiers["purl"],
+			// TODO(puerco): Add activity
+			"0",
+			fmt.Sprintf("%f", r.Score), fmt.Sprintf("%f", r.ProvenanceScore),
+			intLabels[r.Deprecated], intLabels[r.Malicious],
 		})
 	}
 

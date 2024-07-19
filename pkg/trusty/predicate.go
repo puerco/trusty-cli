@@ -18,10 +18,15 @@ type PackageInfo struct {
 	Package     string            `json:"package"`
 	Version     string            `json:"version"`
 	Identifiers map[string]string `json:"identifiers,omitempty"`
+	Ecosystem   string            `json:"ecosystem"`
 }
 
 type PackageScore struct {
 	PackageInfo
-	Score   float64        `json:"score"`
-	Details map[string]any `json:"details"`
+	Score           float64        `json:"score"`
+	ActivityScore   float64        `json:"activity"`
+	ProvenanceScore float64        `json:"provenance"`
+	Details         map[string]any `json:"details"`
+	Malicious       bool           `json:"malicious"`
+	Deprecated      bool           `json:"deprecated"`
 }

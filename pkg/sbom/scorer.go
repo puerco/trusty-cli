@@ -17,6 +17,12 @@ import (
 	"github.com/stacklok/trusty-attest/pkg/trusty"
 )
 
+var purlToTrustyEco = map[string]types.Ecosystem{
+	"golang": types.ECOSYSTEM_GO,
+	"npm":    types.ECOSYSTEM_NPM,
+	"pypi":   types.ECOSYSTEM_PYPI,
+}
+
 type TrustyAPIError struct {
 	error
 }
@@ -144,13 +150,22 @@ func (s *Scorer) ScoreNode(ctx context.Context, n *sbom.Node) (*trusty.PackageSc
 		ids["cpe22"] = n.Identifiers[int32(sbom.SoftwareIdentifierType_CPE22)]
 	}
 
+	ecoLabel := ""
+	if _, ok := purlToTrustyEco[purl.Type]; ok {
+		ecoLabel = purlToTrustyEco[purl.Type].AsString()
+	}
 	return &trusty.PackageScore{
 		PackageInfo: trusty.PackageInfo{
 			Package:     n.Name,
 			Version:     n.Version,
 			Identifiers: ids,
+			Ecosystem:   ecoLabel,
 		},
-		Score:   *res.Summary.Score,
-		Details: res.Summary.Description,
+		Score: *res.Summary.Score,
+		// ActivityScore:   res.Activity.Score,
+		ProvenanceScore: res.Provenance.Score,
+		Details:         res.Summary.Description,
+		Malicious:       res.PackageData.Malicious != nil,
+		Deprecated:      res.PackageData.Deprecated,
 	}, nil
 }

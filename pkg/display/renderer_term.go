@@ -12,12 +12,18 @@ import (
 
 type TermRenderer struct{}
 
+var emojiBool = map[bool]string{
+	true: "⚠️", false: "",
+}
+
 func (tr *TermRenderer) DisplayResultSet(w io.Writer, res []trusty.PackageScore) error {
 	var rows = [][]string{}
 	for _, s := range res {
 		rows = append(rows, []string{
 			s.Identifiers["purl"],
-			//s.Package, s.Version,
+			emojiBool[s.Deprecated],
+			emojiBool[s.Malicious],
+			fmt.Sprintf("%f", s.ProvenanceScore),
 			fmt.Sprintf("%f", s.Score),
 		})
 	}
@@ -58,7 +64,7 @@ func (tr *TermRenderer) DisplayResultSet(w io.Writer, res []trusty.PackageScore)
 				return styleB
 			}
 		}).
-		Headers("PACKAGE", "SCORE").
+		Headers("PACKAGE", "DEPRECATED", "MALICIOUS", "PROVENANCE", "SCORE").
 		Rows(rows...)
 
 	if _, err := fmt.Fprint(w, t); err != nil {
