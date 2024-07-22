@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"os"
 	"strings"
 
 	"github.com/anchore/packageurl-go"
@@ -71,10 +72,10 @@ func (s *Scorer) ScoreNodeList(ctx context.Context, nl *sbom.NodeList) ([]trusty
 		tlID[i] = struct{}{}
 	}
 	scores := []trusty.PackageScore{}
-	fmt.Printf("Scoring %d dependencies", len(nl.Nodes))
+	fmt.Fprintf(os.Stderr, "Scoring %d dependencies", len(nl.Nodes))
 	defer fmt.Println("")
 	for _, n := range nl.Nodes {
-		fmt.Print(".")
+		fmt.Fprint(os.Stderr, ".")
 		if _, ok := tlID[n.Id]; ok {
 			continue
 		}
