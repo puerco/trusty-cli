@@ -51,7 +51,7 @@ func (o *sbomOptions) AddFlags(cmd *cobra.Command) {
 func addSBOM(parentCmd *cobra.Command) {
 	opts := sbomOptions{}
 	createCmd := &cobra.Command{
-		Short:             fmt.Sprintf("%s sbom: report on dependency quality from an SBOM", appname),
+		Short:             "report dependency quality from an SBOM",
 		Use:               "sbom [flags] sbom.[spdx|cdx].json",
 		Example:           fmt.Sprintf("%s sbom my-sbom.spdx.json", appname),
 		SilenceUsage:      false,

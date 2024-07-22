@@ -12,7 +12,7 @@ import (
 const appname = "trusty"
 
 var rootCmd = &cobra.Command{
-	Short:             "An trusty score attestation generator",
+	Short:             "A utility to do useful stuff with Trusty data.",
 	Use:               appname,
 	SilenceUsage:      false,
 	PersistentPreRunE: initLogging,
